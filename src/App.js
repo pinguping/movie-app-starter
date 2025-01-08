@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-const KEY = "2f8943c";
+const KEY = "";
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("batman");
 
   useEffect(() => {
+    const controller = new AbortController();
     // Effect
-    fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`)
+    fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`, {
+      signal: controller.signal,
+    })
       .then((res) => res.json())
       .then((data) => data.Response === "True" && setMovies(data.Search))
       .catch((err) => console.log(err));
+    return () => {
+      controller.abort();
+    };
   }, [query]);
 
   return (
